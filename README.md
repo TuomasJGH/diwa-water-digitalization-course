@@ -22,32 +22,43 @@ Improved precipitation estimates are required to improve water management in agr
 
 ### Approach
 
-Historical precipitation patterns are analyzed using the Standardized Precipitation Index SPI (McKee et al., 1993). It has been widely used to analyze precipitation deviations during a given time period with a given accumulation period. SPI determines how precipitation during the accumulation period differs from the mean of the time period.
+Historical precipitation patterns are analyzed using the Standardized Precipitation Index SPI (McKee et al., 1993). It has been widely used to analyze precipitation deviations during a given time period with a given accumulation period. SPI uses the standard deviation as a unit to determine how precipitation accumulations differ from the mean of the time period. McKee et al. (1993) described SPI values below 0 to indicate drought and those above 0 to indicate excess precipitation, and they also designated threshold values to indicate severity of the events.
 
 SPI with different accumulation periods are noted as SPI-n, where n is the number of months included in the accumulation period, often in the range of 1 to 12. SPI with shorter accumulation periods are better at describing short-term events, while longer accumulation periods describe long-term phenomena.
 
 ### Objective
 The objective is to construct a digital tool that is able to analyze historical precipitation and produce insights into hydrological conditions across Finland using the Standardized Precipitation Index. This tool processes openly available gridded precipitation data, and produces map views and tabled results in different locations and timescales based on user input.
 
+The tool is intended to help distinguish changing precipitation conditions in Finland and highlight areas with particularly significant changes.
+
 ## Data Source
 Finnish Meteorological Insitute offers gridded observation data on their [website.](https://en.ilmatieteenlaitos.fi/gridded-observations-on-aws-s3) The format for these files is NetCDF, and each file contains daily records for a meteorological variable. The grid resolution is one km^2, and areas falling outside of Finland are masked. Observations are available for years 1961 to 2025, with new years appended as their data is available.
 
 ## Methodology
-The tool begins by requesting parameters from the user, such as the time period, the accumulation period and the desired map visualizations and indicator values (full list to be determined!)
+Equations for the calculation of SPI are taken from Lloyd-Hughes and Saunders (2002). 
 
-The tool accesses FMI records using an URL and downloads an user-determined selection of NetCDF files on precipitation.
+The tool begins by requesting parameters from the user, such as the time period, the accumulation period, event thresholds, the desired map visualizations and indicator values. Supported accumulation periods are 1, 3, 6 and 12 months.
 
-The tool then distinguishes grid cells describing Finland, and calculates the user-given SPI time series for each cell according to the accumulation period. SPI events crossing given thresholds are logged into cell-specific lists, and 
+The tool accesses FMI records using an URL and downloads an user-determined selection of NetCDF files on precipitation. This requires storage capacity, so the tool also designates a folder dedicated for the data to be downloaded. Once the data is downloaded, the files are read for access in the tool. The tool distinguishes grid cells describing Finland from masked cells, and calculates the user-given SPI time series for each cell according to the accumulation period. SPI events crossing given thresholds are logged into cell-specific lists, and the requested variables (duration, amount, maximum/minimum SPI) are returned and stored in arrays of identical shape to the gridded data.
 
 ## Repository description
 This repository is made available to (eventually) include the SPI from gridded precipitation tool as a single file, as well as split into its functions for modular implementation. In addition, a walkthrough file is included to reproduce a set of results with thoroughly commented code.
 
 ## Results
 The tool outputs map visualizations of Finland and result tables with indicators describing the precipitation patterns in the selected time period and with the given accumulation period.
-## License
 
 ## Citation
+Haapala, T. 2026. SPI from Gridded Precipitation in Finland.
 
-## Contribution guidelines
+## References
+
+Finnish Meteorological Institute. 2026. Daily observations in 1km*1km grid. Available at:
+https://en.ilmatieteenlaitos.fi/gridded-observations-on-aws-s3
+
+McKee, T. B., Doesken, N. J., Kleist, J. 1993. The relationship of drought frequency and duration to time scales. 8th Conference on Applied Climatology, Anaheim, 17-22 January 1993.
+
+Lloyd-Hughes, B., Saunders, M. A. 2002. A drought climatology for Europe. International Journal
+of Climatology. https://doi.org/10.1002/joc.846
+
 
 
