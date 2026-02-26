@@ -35,7 +35,7 @@ The tool is intended to help distinguish changing precipitation conditions in Fi
 Finnish Meteorological Insitute offers gridded observation data on their [website.](https://en.ilmatieteenlaitos.fi/gridded-observations-on-aws-s3) The format for these files is NetCDF, and each file contains daily records for a meteorological variable. The grid resolution is one km^2, and areas falling outside of Finland are masked. Observations are available for years 1961 to 2025, with new years appended as their data is available.
 
 ## Methodology
-Equations for the calculation of SPI are taken from Lloyd-Hughes and Saunders (2002). 
+Equations and methodology for the calculation of SPI are taken from Lloyd-Hughes and Saunders (2002). Lloyd-Hughes and Saunders modelled droughts across Europe with gridded data, and their methodology provides a consistent framework to estimate changes in precipitation.
 
 The tool begins by requesting parameters from the user, such as the time period, the accumulation period, event thresholds, the desired map visualizations and indicator values. Supported accumulation periods are 1, 3, 6 and 12 months.
 
