@@ -1,8 +1,8 @@
-# SPI from Gridded Precipitation in Finland
+# SPI Trends from Gridded Precipitation in Finland
 For Water Digitalization I/2026, University of Oulu
 
 ## Author 
-Tuomas Haapala, doctoral researcher
+Tuomas Jaakko Gabriel Haapala, doctoral researcher
 
 Digital Waters Flagship, Aalto University
 
@@ -27,28 +27,91 @@ Historical precipitation patterns are analyzed using the Standardized Precipitat
 SPI with different accumulation periods are noted as SPI-n, where n is the number of months included in the accumulation period, often in the range of 1 to 12. SPI with shorter accumulation periods are better at describing short-term events, while longer accumulation periods describe long-term phenomena.
 
 ### Objective
-The objective is to construct a digital tool that is able to analyze historical precipitation and produce insights into hydrological conditions across Finland using the Standardized Precipitation Index. This tool processes openly available gridded precipitation data, and produces map views and tabled results in different locations and timescales based on user input.
+The objective is to construct a digital tool that is able to analyze historical precipitation and produce insights into hydrological conditions across Finland using the Standardized Precipitation Index and trend analysis of the SPI. This tool processes openly available gridded precipitation data, and produces map views and tabled results in different locations and timescales based on user input.
 
-The tool is intended to help distinguish changing precipitation conditions in Finland and highlight areas with particularly significant changes.
+The tool is intended to help distinguish changing precipitation conditions in Finland and highlight areas with significant trends.
+
+### Research Questions
+<ul>
+  <li>How has precipitation changed in Finland during the last century?</li>
+  <li>Are there regions experiencing spatial autocorrelation in SPI trends?</li>
+  <li>How are SPI trends affected by different modifications of the Mann-Kendall trend test?</li>
+</ul>    
 
 ## Data Source
-Finnish Meteorological Insitute offers gridded observation data on their [website.](https://en.ilmatieteenlaitos.fi/gridded-observations-on-aws-s3) The format for these files is NetCDF, and each file contains daily records for a meteorological variable. The grid resolution is one km^2, and areas falling outside of Finland are masked. Observations are available for years 1961 to 2025, with new years appended as their data is available.
+Finnish Meteorological Insitute offers gridded observation data on their [website.](https://en.ilmatieteenlaitos.fi/gridded-observations-on-aws-s3) The format for these files is NetCDF, and each file contains daily records for a meteorological variable. The grid resolution is 1 km * 1 km, and areas falling outside of Finland are masked. Observations are available for years 1961 to 2025, with new years appended as their data is available.
 
 ## Methodology
+
+### Method Basis
 Equations and methodology for the calculation of SPI are taken from Lloyd-Hughes and Saunders (2002). Lloyd-Hughes and Saunders modelled droughts across Europe with gridded data, and their methodology provides a consistent framework to estimate changes in precipitation.
 
-The tool begins by requesting parameters from the user, such as the time period, the accumulation period, event thresholds, the desired map visualizations and indicator values. Supported accumulation periods are 1, 3, 6 and 12 months.
+The SE1.py file includes a data access script that uses the URL 
+https://fmi-gridded-obs-daily-1km.s3-eu-west-1.amazonaws.com/Netcdf
+to download gridded precipitation data for a user-specified time period from available observations, and stores them in the folder raw_data.
 
-The tool accesses FMI records using an URL and downloads an user-determined selection of NetCDF files on precipitation. This requires storage capacity, so the tool also designates a folder dedicated for the data to be downloaded. Once the data is downloaded, the files are read for access in the tool. The tool distinguishes grid cells describing Finland from masked cells, and calculates the user-given SPI time series for each cell according to the accumulation period. SPI events crossing given thresholds are logged into cell-specific lists, and the requested variables (duration, amount, maximum/minimum SPI) are returned and stored in arrays of identical shape to the gridded data.
+The SE2.py file is a data analysis script. The user inputs an accumulation period for calculating the SPI, where supported accumulation periods are 1, 3, 6 and 12 months. The script then distinguishes grid cells describing Finland from masked cells and produces a grid map of Finland, where each cell contains a daily SPI time series for the extent of the input data time period. This SPI map is stored as a 1D array .csv file in the folder analysis_folder alongside the accumulation period and a list of summer/growing season dates (April 1st to August 31st) present in the analysed time period.
+
+The SE3.py file reads the SPI map and the other files from the analysis folder, and calculates the presence of SPI events within each cell based on SPI event threshold values provided with user input. For example, -1 can be used as a threshold value for SPI events depicting dryness, and 1 for SPI events depicting excess wetness. With these threshold values, the script then calculates for each cell and for both dry and wet events: 
+<ul>
+  <li>average event length</li>
+  <li>average event length during summer</li>
+  <li>number of events</li>
+  <li>number of events during summer</li>
+</ul>
+The script then utilizes three different trend tests: the Mann-Kendall trend test, the Hamed and Rao modified Mann-Kendall test, and the Yue and Wang modified Mann-Kendall trend test. These trend tests are used together to gain a thorough perspective on present SPI trends, and the tests are performed for event length and the average event length for both dry and wet events occurring during summer. Trend direction, slope and p-value are calculated.
+
+The listed variables above and the trend values are stored in grid maps of same size and shape to the original gridded data, and saved in the folder map_folder.
+
+SE4 and onward will be focused on visualizing and analyzing these event indicators and trend variables.
+
 
 ## Repository description
-This repository is made available to (eventually) include the SPI from gridded precipitation tool as a single file, as well as split into its functions for modular implementation. In addition, a walkthrough file is included to reproduce a set of results with thoroughly commented code.
+This repository is made available to include the SPI from gridded precipitation tool as a collection of files for modular implementation. 
+A walkthrough file will be included to reproduce a set of results with thoroughly commented code upon course completion.
+
+The code is divided into the following files as described by the assignments of this course.
+<ul>
+  <li>SE1.py - Data Access</li>
+  <li>SE2.py - Data Process</li>
+  <li>SE3.py - Trend Analysis</li>
+  <li>SE4.py - Visualization</li>
+</ul>
 
 ## Results
-The tool outputs map visualizations of Finland and result tables with indicators describing the precipitation patterns in the selected time period and with the given accumulation period.
+
+The tool outputs map grids of Finland with indicators describing the precipitation trends and event indicators in the selected time period and with the given accumulation period. The map grids are stored as .csv files, and can be visualized with the included SE4.py script.
+
+## License
+
+MIT License
+
+Copyright (c) 2026 Tuomas Jaakko Gabriel Haapala
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
 
 ## Citation
-Haapala, T. 2026. SPI from Gridded Precipitation in Finland.
+Haapala, T. J. G. (2026) SPI Trends from Gridded Precipitation in Finland.
+
+## Contribution guidelines
+
+Under construction.
 
 ## References
 
